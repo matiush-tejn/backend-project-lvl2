@@ -1,4 +1,5 @@
 ## gendiff
+[![Maintainability](https://api.codeclimate.com/v1/badges/7257cf8f161a265f52de/maintainability)](https://codeclimate.com/github/matiush-tejn/backend-project-lvl2/maintainability)
 ### Description
 Training project.
 
