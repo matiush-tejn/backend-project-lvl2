@@ -2,7 +2,6 @@ name: Node CI
 
 on:
   - push
-  - pull_request
 
 jobs:
   build:
@@ -20,10 +19,11 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install, build
+      - name: npm install, build, test
         run: |
           make install
           make build
+          make test
         env:
           CI: true
       - name: Run linter
