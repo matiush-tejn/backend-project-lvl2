@@ -1,5 +1,6 @@
 ## gendiff
 [![Maintainability](https://api.codeclimate.com/v1/badges/7257cf8f161a265f52de/maintainability)](https://codeclimate.com/github/matiush-tejn/backend-project-lvl2/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7257cf8f161a265f52de/test_coverage)](https://codeclimate.com/github/matiush-tejn/backend-project-lvl2/test_coverage)
 ### Description
 Training project.
 
