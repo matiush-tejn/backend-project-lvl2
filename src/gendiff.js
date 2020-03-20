@@ -1,7 +1,5 @@
-import { readFileSync } from 'fs';
-import { extname } from 'path';
 import { has } from 'lodash';
-import parser from './parse';
+import getParsedData from './parse';
 
 const compare = (data1, data2) => {
   const changed = Object.entries(data1).reduce((acc, [key, value]) => {
@@ -13,12 +11,6 @@ const compare = (data1, data2) => {
     has(data1, key) ? acc : { ...acc, [`+ ${key}`]: value }), {});
   const result = { ...changed, ...added };
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
-};
-
-const getParsedData = (filepath) => {
-  const inputData = readFileSync(filepath, 'utf-8');
-  const ext = extname(filepath);
-  return parser(ext, inputData);
 };
 
 export default (filepath1, filepath2) => {

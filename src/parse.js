@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+import { extname } from 'path';
 import { safeLoad } from 'js-yaml';
 
 const parsers = {
@@ -5,7 +7,9 @@ const parsers = {
   '.yml': safeLoad,
 };
 
-export default (ext, data) => {
+export default (filepath) => {
+  const ext = extname(filepath);
   const parser = parsers[ext];
-  return parser(data);
+  const inputData = readFileSync(filepath, 'utf-8');
+  return parser(inputData);
 };
