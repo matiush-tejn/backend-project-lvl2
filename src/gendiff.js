@@ -3,14 +3,14 @@ import { extname } from 'path';
 import { has } from 'lodash';
 import { safeLoad } from 'js-yaml';
 
-const compare = (json1, json2) => {
-  const changed = Object.entries(json1).reduce((acc, [key, value]) => {
-    if (!has(json2, key)) return { ...acc, [`- ${key}`]: value };
-    if (value === json2[key]) return { ...acc, [`  ${key}`]: value };
-    return { ...acc, [`+ ${key}`]: value, [`- ${key}`]: json2[key] };
+const compare = (obj1, obj2) => {
+  const changed = Object.entries(obj1).reduce((acc, [key, value]) => {
+    if (!has(obj2, key)) return { ...acc, [`- ${key}`]: value };
+    if (value === obj2[key]) return { ...acc, [`  ${key}`]: value };
+    return { ...acc, [`+ ${key}`]: value, [`- ${key}`]: obj2[key] };
   }, {});
-  const added = Object.entries(json2).reduce((acc, [key, value]) => (
-    has(json1, key) ? acc : { ...acc, [`+ ${key}`]: value }), {});
+  const added = Object.entries(obj2).reduce((acc, [key, value]) => (
+    has(obj1, key) ? acc : { ...acc, [`+ ${key}`]: value }), {});
   const result = { ...changed, ...added };
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
 };
