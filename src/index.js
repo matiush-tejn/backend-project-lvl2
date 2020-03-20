@@ -1,5 +1,7 @@
 import { readFileSync } from 'fs';
+import { extname } from 'path';
 import { has } from 'lodash';
+import { safeLoad } from 'js-yaml';
 
 const compare = (json1, json2) => {
   const changed = Object.entries(json1).reduce((acc, [key, value]) => {
@@ -16,8 +18,10 @@ const compare = (json1, json2) => {
 export default (filepath1, filepath2) => {
   const data1 = readFileSync(filepath1, 'utf-8');
   const data2 = readFileSync(filepath2, 'utf-8');
-  const json1 = JSON.parse(data1);
-  const json2 = JSON.parse(data2);
-  const diff = compare(json1, json2);
+  const ext1 = extname(filepath1);
+  const ext2 = extname(filepath2);
+  const obj1 = ext1 === '.json' ? JSON.parse(data1) : safeLoad(data1);
+  const obj2 = ext2 === '.json' ? JSON.parse(data2) : safeLoad(data2);
+  const diff = compare(obj1, obj2);
   return diff;
 };
