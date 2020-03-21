@@ -2,12 +2,12 @@ import { readFileSync } from 'fs';
 import gendiff from '../src';
 
 const getPath = (filename) => (`__fixtures__/${filename}`);
-const diff = readFileSync(getPath('diff'), 'utf-8');
+const flatDiff = readFileSync(getPath('flat/diff'), 'utf-8');
 
 test.each([
-  ['before.json', 'after.json'],
-  ['before.yml', 'after.yml'],
-  ['before.ini', 'after.ini'],
+  ['flat/before.json', 'flat/after.json'],
+  ['flat/before.yml', 'flat/after.yml'],
+  ['flat/before.ini', 'flat/after.ini'],
 ])('gendiff(%s, %s)', (first, second) => {
-  expect(gendiff(getPath(first), getPath(second))).toBe(diff);
+  expect(gendiff(getPath(first), getPath(second))).toBe(flatDiff);
 });
