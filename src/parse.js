@@ -1,12 +1,12 @@
 import { readFileSync } from 'fs';
 import { extname } from 'path';
-import { safeLoad } from 'js-yaml';
-import { parse } from 'ini';
+import { safeLoad as yamlParse } from 'js-yaml';
+import { decode as iniParse } from 'ini';
 
 const parsers = {
   '.json': JSON.parse,
-  '.yml': safeLoad,
-  '.ini': parse,
+  '.yml': yamlParse,
+  '.ini': iniParse,
 };
 
 export default (filepath) => {
