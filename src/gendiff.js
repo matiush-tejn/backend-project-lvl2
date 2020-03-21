@@ -7,8 +7,9 @@ const compare = (data1, data2) => {
     if (value === data2[key]) return { ...acc, [`  ${key}`]: value };
     return { ...acc, [`+ ${key}`]: value, [`- ${key}`]: data2[key] };
   }, {});
-  const added = Object.entries(data2).reduce((acc, [key, value]) => (
-    has(data1, key) ? acc : { ...acc, [`+ ${key}`]: value }), {});
+  const added = Object.entries(data2)
+    .filter(([key]) => !has(data1, key))
+    .reduce((acc, [key, value]) => ({ ...acc, [`+ ${key}`]: value }), {});
   const result = { ...changed, ...added };
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
 };
