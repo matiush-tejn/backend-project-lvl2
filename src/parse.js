@@ -10,8 +10,8 @@ const parsers = {
 };
 
 export default (filepath) => {
+  const inputData = readFileSync(filepath, 'utf-8');
   const ext = extname(filepath);
   const parser = parsers[ext];
-  const inputData = readFileSync(filepath, 'utf-8');
   return parser(inputData);
 };
