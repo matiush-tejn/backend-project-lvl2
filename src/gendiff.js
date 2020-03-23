@@ -1,8 +1,8 @@
-import { has, uniq } from 'lodash';
+import { has, union } from 'lodash';
 import getParsedData from './parse';
 
 const compare = (data1, data2) => {
-  const keys = uniq([...Object.keys(data1), ...Object.keys(data2)]);
+  const keys = union(Object.keys(data1), Object.keys(data2));
   const result = keys.reduce((acc, key) => {
     if (has(data1, key) && !has(data2, key)) return { ...acc, [`- ${key}`]: data1[key] };
     if (!has(data1, key) && has(data2, key)) return { ...acc, [`+ ${key}`]: data2[key] };
