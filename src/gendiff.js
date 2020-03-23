@@ -7,7 +7,7 @@ const compare = (data1, data2) => {
     if (has(data1, key) && !has(data2, key)) return { ...acc, [`- ${key}`]: data1[key] };
     if (!has(data1, key) && has(data2, key)) return { ...acc, [`+ ${key}`]: data2[key] };
     if (data1[key] === data2[key]) return { ...acc, [`  ${key}`]: data1[key] };
-    return { ...acc, [`+ ${key}`]: data1[key], [`- ${key}`]: data2[key] };
+    return { ...acc, [`- ${key}`]: data1[key], [`+ ${key}`]: data2[key] };
   }, {});
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
 };
