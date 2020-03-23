@@ -1,16 +1,14 @@
-import { has } from 'lodash';
+import { has, uniq } from 'lodash';
 import getParsedData from './parse';
 
 const compare = (data1, data2) => {
-  const changed = Object.entries(data1).reduce((acc, [key, value]) => {
-    if (!has(data2, key)) return { ...acc, [`- ${key}`]: value };
-    if (value === data2[key]) return { ...acc, [`  ${key}`]: value };
-    return { ...acc, [`+ ${key}`]: value, [`- ${key}`]: data2[key] };
+  const keys = uniq([...Object.keys(data1), ...Object.keys(data2)]);
+  const result = keys.reduce((acc, key) => {
+    if (has(data1, key) && !has(data2, key)) return { ...acc, [`- ${key}`]: data1[key] };
+    if (!has(data1, key) && has(data2, key)) return { ...acc, [`+ ${key}`]: data2[key] };
+    if (data1[key] === data2[key]) return { ...acc, [`  ${key}`]: data1[key] };
+    return { ...acc, [`+ ${key}`]: data1[key], [`- ${key}`]: data2[key] };
   }, {});
-  const added = Object.entries(data2)
-    .filter(([key]) => !has(data1, key))
-    .reduce((acc, [key, value]) => ({ ...acc, [`+ ${key}`]: value }), {});
-  const result = { ...changed, ...added };
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
 };
 
