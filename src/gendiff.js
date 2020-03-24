@@ -2,21 +2,23 @@ import { has, union } from 'lodash';
 import getParsedData from './parse';
 
 const buildDiffNodes = (data1, data2) => {
+  const predicates = {
+    deleted: (key) => has(data1, key) && !has(data2, key),
+    added: (key) => !has(data1, key) && has(data2, key),
+    equal: (key) => data1[key] === data2[key],
+    changed: (key) => data1[key] !== data2[key],
+  };
+  const getType = (key) => Object.keys(predicates).find((type) => predicates[type](key));
   const keys = union(Object.keys(data1), Object.keys(data2));
-  return keys.map((key) => {
-    if (has(data1, key) && !has(data2, key)) return { type: 'deleted', key, value: data1[key] };
-    if (!has(data1, key) && has(data2, key)) return { type: 'added', key, value: data2[key] };
-    if (data1[key] === data2[key]) return { type: 'equal', key, value: data1[key] };
-    return { type: 'changed', key, value: [data1[key], data2[key]] };
-  });
+  return keys.map((key) => [getType(key), key, data1[key], data2[key]]);
 };
 
-const renderer = (nodes) => {
-  const result = nodes.reduce((acc, { type, key, value }) => {
-    if (type === 'deleted') return { ...acc, [`- ${key}`]: value };
-    if (type === 'added') return { ...acc, [`+ ${key}`]: value };
-    if (type === 'equal') return { ...acc, [`  ${key}`]: value };
-    return { ...acc, [`- ${key}`]: value[0], [`+ ${key}`]: value[1] };
+const renderer = (diffNodes) => {
+  const result = diffNodes.reduce((acc, [type, key, firstValue, secondValue]) => {
+    if (type === 'deleted') return { ...acc, [`- ${key}`]: firstValue };
+    if (type === 'added') return { ...acc, [`+ ${key}`]: secondValue };
+    if (type === 'equal') return { ...acc, [`  ${key}`]: firstValue };
+    return { ...acc, [`- ${key}`]: firstValue, [`+ ${key}`]: secondValue };
   }, {});
   return JSON.stringify(result, null, ' ').split('').filter((char) => char !== '"').join('');
 };
