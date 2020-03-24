@@ -1,7 +1,7 @@
 import { has, union } from 'lodash';
 import getParsedData from './parse';
 
-const buildNodes = (data1, data2) => {
+const buildDiffNodes = (data1, data2) => {
   const keys = union(Object.keys(data1), Object.keys(data2));
   return keys.map((key) => {
     if (has(data1, key) && !has(data2, key)) return { type: 'deleted', key, value: data1[key] };
@@ -24,6 +24,6 @@ const renderer = (nodes) => {
 export default (filepath1, filepath2) => {
   const parsedData1 = getParsedData(filepath1);
   const parsedData2 = getParsedData(filepath2);
-  const nodes = buildNodes(parsedData1, parsedData2);
-  return renderer(nodes);
+  const diffNodes = buildDiffNodes(parsedData1, parsedData2);
+  return renderer(diffNodes);
 };
