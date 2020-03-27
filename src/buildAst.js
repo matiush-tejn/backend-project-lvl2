@@ -1,6 +1,4 @@
 import { has, union } from 'lodash';
-import getParsedData from './parse';
-import renderer from './renderer';
 
 const buildAst = (data1, data2) => {
   const predicates = {
@@ -19,9 +17,4 @@ const buildAst = (data1, data2) => {
   });
 };
 
-export default (filepath1, filepath2) => {
-  const parsedData1 = getParsedData(filepath1);
-  const parsedData2 = getParsedData(filepath2);
-  const astTree = buildAst(parsedData1, parsedData2);
-  return renderer(astTree);
-};
+export default buildAst;
