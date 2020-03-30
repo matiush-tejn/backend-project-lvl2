@@ -9,7 +9,7 @@ const nodeTypes = [
   {
     type: 'added',
     predicate: (key, data1, data2) => !has(data1, key) && has(data2, key),
-    getData: (undef, value) => value,
+    getData: (nonexistent, value) => value,
   },
   {
     type: 'nested',
