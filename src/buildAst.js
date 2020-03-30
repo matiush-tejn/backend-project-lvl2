@@ -1,19 +1,37 @@
 import { has, union } from 'lodash';
 
 const buildAst = (data1, data2) => {
-  const predicates = {
-    deleted: (key) => has(data1, key) && !has(data2, key),
-    added: (key) => !has(data1, key) && has(data2, key),
-    nested: (key) => data1[key] instanceof Object && data2[key] instanceof Object,
-    equal: (key) => data1[key] === data2[key],
-    changed: (key) => data1[key] !== data2[key],
-  };
-  const getType = (key) => Object.keys(predicates).find((type) => predicates[type](key));
+  const nodeTypes = [
+    {
+      type: 'deleted',
+      predicate: (key) => has(data1, key) && !has(data2, key),
+      getData: (key) => data1[key],
+    },
+    {
+      type: 'added',
+      predicate: (key) => !has(data1, key) && has(data2, key),
+      getData: (key) => data2[key],
+    },
+    {
+      type: 'nested',
+      predicate: (key) => data1[key] instanceof Object && data2[key] instanceof Object,
+      getData: (key) => buildAst(data1[key], data2[key]),
+    },
+    {
+      type: 'equal',
+      predicate: (key) => data1[key] === data2[key],
+      getData: (key) => data1[key],
+    },
+    {
+      type: 'changed',
+      predicate: (key) => data1[key] !== data2[key],
+      getData: (key) => [data1[key], data2[key]],
+    },
+  ];
   const keys = union(Object.keys(data1), Object.keys(data2));
   return keys.map((key) => {
-    const type = getType(key);
-    const children = type === 'nested' ? buildAst(data1[key], data2[key]) : [];
-    return [type, key, data1[key], data2[key], children];
+    const { type, getData } = nodeTypes.find(({ predicate }) => predicate(key));
+    return { type, key, data: getData(key) };
   });
 };
 
