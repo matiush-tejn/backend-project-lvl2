@@ -1,21 +1,30 @@
-import { mapKeys } from 'lodash';
+const indentStep = 4;
+const getIndent = (count) => ' '.repeat(count * indentStep);
 
-const align = (content) => (
-  content instanceof Object ? mapKeys(content, (value, key) => `  ${key}`) : content);
+const renderer = (astTree, indentCount) => {
+  const indent = getIndent(indentCount);
+  const addBrackets = (content) => `{\n${content}\n${indent}  }`;
 
-const handlers = {
-  deleted: (key, data) => ({ [`- ${key}`]: align(data) }),
-  added: (key, data) => ({ [`+ ${key}`]: align(data) }),
-  nested: (key, data, convert) => ({ [`  ${key}`]: convert(data) }),
-  equal: (key, data) => ({ [`  ${key}`]: data }),
-  changed: (key, data) => ({ [`- ${key}`]: align(data[0]), [`+ ${key}`]: align(data[1]) }),
+  const stringify = (value) => {
+    if (!(value instanceof Object)) return value.toString();
+    const content = Object.keys(value)
+      .map((key) => `${getIndent(indentCount + 1)}  ${key}: ${value[key]}`)
+      .join('\n');
+    return addBrackets(content);
+  };
+
+  const buildString = (prefix, key, value) => `${indent}${prefix} ${key}: ${stringify(value)}`;
+  const handlers = {
+    deleted: (key, value) => buildString('-', key, value),
+    added: (key, value) => buildString('+', key, value),
+    nested: (key, value) => buildString(' ', key, addBrackets(renderer(value, indentCount + 1))),
+    equal: (key, value) => buildString(' ', key, value),
+    changed: (key, [value1, value2]) => `${buildString('-', key, value1)}\n${buildString('+', key, value2)}`,
+  };
+
+  return astTree
+    .map(({ type, key, value }) => handlers[type](key, value))
+    .join('\n');
 };
 
-const convert = (astTree) => astTree.reduce((acc, { type, key, data }) => {
-  const handler = handlers[type];
-  return { ...acc, ...handler(key, data, convert) };
-}, {});
-
-const spacesCount = 4;
-export default (astTree) => JSON.stringify(convert(astTree), null, spacesCount)
-  .split('').filter((char) => char !== '"' && char !== ',').join('');
+export default (astTree) => `{\n${renderer(astTree, 1)}\n}`;
