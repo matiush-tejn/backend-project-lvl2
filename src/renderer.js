@@ -5,21 +5,31 @@ const addBrackets = (content, indentCount) => `{\n${content}\n${getIndent(indent
 const stringify = (value, indentCount) => {
   if (!(value instanceof Object)) return value.toString();
   const content = Object.keys(value)
-    .map((key) => `${getIndent(indentCount + 1)}  ${key}: ${stringify(value[key], indentCount + 1)}`)
+    .map((key) => (
+      `${getIndent(indentCount + 1)}  ${key}: ${stringify(value[key], indentCount + 1)}`))
     .join('\n');
   return addBrackets(content, indentCount);
 };
 
 const renderer = (astTree, indentCount) => {
-  const indent = getIndent(indentCount);
+  const buildString = (prefix, key, value) => {
+    const indent = getIndent(indentCount);
+    return `${indent}${prefix} ${key}: ${stringify(value, indentCount)}`;
+  };
 
-  const buildString = (prefix, key, value) => `${indent}${prefix} ${key}: ${stringify(value, indentCount)}`;
   const handlers = {
     deleted: (key, value) => buildString('-', key, value),
     added: (key, value) => buildString('+', key, value),
-    nested: (key, value) => buildString(' ', key, addBrackets(renderer(value, indentCount + 1), indentCount)),
+    nested: (key, value) => {
+      const content = renderer(value, indentCount + 1);
+      return buildString(' ', key, addBrackets(content, indentCount));
+    },
     equal: (key, value) => buildString(' ', key, value),
-    changed: (key, [value1, value2]) => `${buildString('-', key, value1)}\n${buildString('+', key, value2)}`,
+    changed: (key, [value1, value2]) => {
+      const line1 = buildString('-', key, value1);
+      const line2 = buildString('+', key, value2);
+      return `${line1}\n${line2}`;
+    },
   };
 
   return astTree
