@@ -22,13 +22,14 @@ const renderer = (astTree, indentCount) => {
     added: (key, value) => buildString('+', key, value),
     nested: (key, value) => {
       const content = renderer(value, indentCount + 1);
-      return buildString(' ', key, addBrackets(content, indentCount));
+      const contentInBrackets = addBrackets(content, indentCount);
+      return buildString(' ', key, contentInBrackets);
     },
     equal: (key, value) => buildString(' ', key, value),
     changed: (key, [value1, value2]) => {
-      const line1 = buildString('-', key, value1);
-      const line2 = buildString('+', key, value2);
-      return `${line1}\n${line2}`;
+      const textRepresent1 = buildString('-', key, value1);
+      const textRepresent2 = buildString('+', key, value2);
+      return `${textRepresent1}\n${textRepresent2}`;
     },
   };
 
