@@ -1,4 +1,4 @@
-import { flattenDeep, isEmpty } from 'lodash';
+import { flattenDeep } from 'lodash';
 
 const stringify = (value) => {
   if (value instanceof Object) return '[complex value]';
@@ -6,17 +6,17 @@ const stringify = (value) => {
 };
 
 const handlers = {
-  deleted: (key) => `Property '${key}' was deleted`,
-  added: (key, value) => `Property '${key}' was added with value: ${stringify(value)}`,
-  changed: (key, [value1, value2]) => (
-    `Property '${key}' was changed from ${stringify(value1)} to ${stringify(value2)}`),
+  deleted: (path) => `Property '${path}' was deleted`,
+  added: (path, value) => `Property '${path}' was added with value: ${stringify(value)}`,
+  changed: (path, [value1, value2]) => (
+    `Property '${path}' was changed from ${stringify(value1)} to ${stringify(value2)}`),
 };
 
-const getFullKey = (prevKeys, key) => (isEmpty(prevKeys) ? key : `${prevKeys.join('.')}.${key}`);
 const renderer = (astTree, prevKeys = []) => astTree
   .filter(({ type }) => type !== 'equal')
-  .map(({ type, key, value }) => (type === 'nested'
-    ? renderer(value, [...prevKeys, key])
-    : handlers[type](getFullKey(prevKeys, key), value)));
+  .map(({ type, key, value }) => {
+    const keys = [...prevKeys, key];
+    return type === 'nested' ? renderer(value, keys) : handlers[type](keys.join('.'), value);
+  });
 
 export default (astTree) => flattenDeep(renderer(astTree)).join('\n');
