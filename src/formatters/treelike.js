@@ -1,41 +1,39 @@
 const indentStep = 4;
 const getIndent = (count) => ' '.repeat(count * indentStep);
-const addBrackets = (content, indentCount) => `{\n${content}\n${getIndent(indentCount)}  }`;
+const addBrackets = (content, depth) => `{\n${content}\n${getIndent(depth)}  }`;
 
-const stringify = (value, indentCount) => {
+const stringify = (value, depth) => {
   if (!(value instanceof Object)) return value.toString();
   const content = Object.keys(value)
     .map((key) => (
-      `${getIndent(indentCount + 1)}  ${key}: ${stringify(value[key], indentCount + 1)}`))
+      `${getIndent(depth + 1)}  ${key}: ${stringify(value[key], depth + 1)}`))
     .join('\n');
-  return addBrackets(content, indentCount);
+  return addBrackets(content, depth);
 };
 
-const renderer = (astTree, indentCount) => {
-  const buildString = (prefix, key, value) => {
-    const indent = getIndent(indentCount);
-    return `${indent}${prefix} ${key}: ${stringify(value, indentCount)}`;
-  };
-
-  const handlers = {
-    deleted: (key, value) => buildString('-', key, value),
-    added: (key, value) => buildString('+', key, value),
-    nested: (key, value) => {
-      const content = renderer(value, indentCount + 1);
-      const contentInBrackets = addBrackets(content, indentCount);
-      return buildString(' ', key, contentInBrackets);
-    },
-    equal: (key, value) => buildString(' ', key, value),
-    changed: (key, [value1, value2]) => {
-      const textRepresent1 = buildString('-', key, value1);
-      const textRepresent2 = buildString('+', key, value2);
-      return `${textRepresent1}\n${textRepresent2}`;
-    },
-  };
-
-  return astTree
-    .map(({ type, key, value }) => handlers[type](key, value))
-    .join('\n');
+const buildString = (prefix, key, value, depth) => {
+  const indent = getIndent(depth);
+  return `${indent}${prefix} ${key}: ${stringify(value, depth)}`;
 };
 
-export default (astTree) => `{\n${renderer(astTree, 1)}\n}`;
+const handlers = {
+  deleted: (key, value, depth) => buildString('-', key, value, depth),
+  added: (key, value, depth) => buildString('+', key, value, depth),
+  nested: (key, value, depth, formatter) => {
+    const content = formatter(value, depth + 1);
+    const contentInBrackets = addBrackets(content, depth);
+    return buildString(' ', key, contentInBrackets, depth);
+  },
+  equal: (key, value, depth) => buildString(' ', key, value, depth),
+  changed: (key, [value1, value2], depth) => {
+    const textRepresent1 = buildString('-', key, value1, depth);
+    const textRepresent2 = buildString('+', key, value2, depth);
+    return `${textRepresent1}\n${textRepresent2}`;
+  },
+};
+
+const formatter = (astTree, depth) => astTree
+  .map(({ type, key, value }) => handlers[type](key, value, depth, formatter))
+  .join('\n');
+
+export default (astTree) => `{\n${formatter(astTree, 1)}\n}`;

@@ -5,18 +5,17 @@ const stringify = (value) => {
   return typeof value === 'string' ? `'${value}'` : value;
 };
 
+const getKeysLine = (keys) => `Property '${keys.join('.')}' was`;
 const handlers = {
-  deleted: (path) => `Property '${path}' was deleted`,
-  added: (path, value) => `Property '${path}' was added with value: ${stringify(value)}`,
-  changed: (path, [value1, value2]) => (
-    `Property '${path}' was changed from ${stringify(value1)} to ${stringify(value2)}`),
+  deleted: (keys) => `${getKeysLine(keys)} deleted`,
+  added: (keys, value) => `${getKeysLine(keys)} added with value: ${stringify(value)}`,
+  nested: (keys, value, formatter) => formatter(value, keys),
+  changed: (keys, [value1, value2]) => (
+    `${getKeysLine(keys)} changed from ${stringify(value1)} to ${stringify(value2)}`),
 };
 
-const renderer = (astTree, prevKeys = []) => astTree
+const formatter = (astTree, prevKeys = []) => astTree
   .filter(({ type }) => type !== 'equal')
-  .map(({ type, key, value }) => {
-    const keys = [...prevKeys, key];
-    return type === 'nested' ? renderer(value, keys) : handlers[type](keys.join('.'), value);
-  });
+  .map(({ type, key, value }) => handlers[type]([...prevKeys, key], value, formatter));
 
-export default (astTree) => flattenDeep(renderer(astTree)).join('\n');
+export default (astTree) => flattenDeep(formatter(astTree)).join('\n');
