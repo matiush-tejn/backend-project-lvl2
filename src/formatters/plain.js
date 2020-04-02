@@ -10,8 +10,8 @@ const handlers = {
   deleted: (keys) => `${getKeysLine(keys)} deleted`,
   added: (keys, value) => `${getKeysLine(keys)} added with value: ${stringify(value)}`,
   nested: (keys, value, formatter) => formatter(value, keys),
-  changed: (keys, [value1, value2]) => (
-    `${getKeysLine(keys)} changed from ${stringify(value1)} to ${stringify(value2)}`),
+  changed: (keys, [oldValue, newValue]) => (
+    `${getKeysLine(keys)} changed from ${stringify(oldValue)} to ${stringify(newValue)}`),
 };
 
 const formatter = (astTree, prevKeys = []) => astTree
