@@ -12,7 +12,7 @@ program
   .action((firstConfig, secondConfig) => {
     const output = formats.includes(program.format)
       ? gendiff(firstConfig, secondConfig, program.format)
-      : 'Unknown format.';
+      : 'Unknown format :(';
     console.log(output);
   })
   .parse(process.argv);
