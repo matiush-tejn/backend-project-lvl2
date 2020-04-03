@@ -19,8 +19,8 @@ const buildString = (prefix, key, value, depth) => {
 const handlers = {
   deleted: (key, value, depth) => buildString('-', key, value, depth),
   added: (key, value, depth) => buildString('+', key, value, depth),
-  nested: (key, value, depth, formatter) => {
-    const content = formatter(value, depth + 1);
+  nested: (key, value, depth, iter) => {
+    const content = iter(value, depth + 1);
     const contentInBrackets = addBrackets(content, depth);
     return buildString(' ', key, contentInBrackets, depth);
   },
@@ -29,8 +29,8 @@ const handlers = {
     `${buildString('-', key, oldValue, depth)}\n${buildString('+', key, newValue, depth)}`),
 };
 
-const formatter = (astTree, depth = 1) => astTree
-  .map(({ type, key, value }) => handlers[type](key, value, depth, formatter))
+const iter = (astTree, depth = 1) => astTree
+  .map(({ type, key, value }) => handlers[type](key, value, depth, iter))
   .join('\n');
 
-export default (astTree) => `{\n${formatter(astTree)}\n}`;
+export default (astTree) => `{\n${iter(astTree)}\n}`;

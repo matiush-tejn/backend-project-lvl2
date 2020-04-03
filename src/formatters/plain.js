@@ -9,13 +9,13 @@ const getKeysLine = (keys) => `Property '${keys.join('.')}' was`;
 const handlers = {
   deleted: (keys) => `${getKeysLine(keys)} deleted`,
   added: (keys, value) => `${getKeysLine(keys)} added with value: ${stringify(value)}`,
-  nested: (keys, value, formatter) => formatter(value, keys),
+  nested: (keys, value, iter) => iter(value, keys),
   changed: (keys, [oldValue, newValue]) => (
     `${getKeysLine(keys)} changed from ${stringify(oldValue)} to ${stringify(newValue)}`),
 };
 
-const formatter = (astTree, prevKeys = []) => astTree
+const iter = (astTree, prevKeys = []) => astTree
   .filter(({ type }) => type !== 'equal')
-  .map(({ type, key, value }) => handlers[type]([...prevKeys, key], value, formatter));
+  .map(({ type, key, value }) => handlers[type]([...prevKeys, key], value, iter));
 
-export default (astTree) => flattenDeep(formatter(astTree)).join('\n');
+export default (astTree) => flattenDeep(iter(astTree)).join('\n');
