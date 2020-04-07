@@ -30,7 +30,7 @@ const handlers = {
 };
 
 const iter = (astTree, depth = 1) => astTree
-  .map(({ type, ...nodeData }) => handlers[type](nodeData, depth, iter))
+  .map((node) => handlers[node.type](node, depth, iter))
   .join('\n');
 
 export default (astTree) => `{\n${iter(astTree)}\n}`;

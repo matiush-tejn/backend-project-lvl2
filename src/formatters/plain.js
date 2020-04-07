@@ -16,6 +16,6 @@ const handlers = {
 
 const iter = (astTree, prevKeys = []) => astTree
   .filter(({ type }) => type !== 'equal')
-  .map(({ type, key, ...nodeData }) => handlers[type]([...prevKeys, key], nodeData, iter));
+  .map((node) => handlers[node.type]([...prevKeys, node.key], node, iter));
 
 export default (astTree) => flattenDeep(iter(astTree)).join('\n');
