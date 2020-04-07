@@ -1,43 +1,46 @@
-import { has, union, identity } from 'lodash';
+import { has, union } from 'lodash';
+
+const getValues = (oldValue, newValue) => ({ oldValue, newValue });
+const getChildren = (oldValue, newValue, buildAst) => ({ children: buildAst(oldValue, newValue) });
 
 const nodeTypes = [
   {
     type: 'deleted',
     definition: (key, oldData, newData) => has(oldData, key) && !has(newData, key),
-    getValue: identity,
+    getNodeData: getValues,
   },
   {
     type: 'added',
     definition: (key, oldData, newData) => !has(oldData, key) && has(newData, key),
-    getValue: (nonexistent, newValue) => newValue,
+    getNodeData: getValues,
   },
   {
     type: 'nested',
     definition: (key, oldData, newData) => (
       oldData[key] instanceof Object && newData[key] instanceof Object),
-    getValue: (oldValue, newValue, buildAst) => buildAst(oldValue, newValue),
+    getNodeData: getChildren,
   },
   {
     type: 'equal',
     definition: (key, oldData, newData) => oldData[key] === newData[key],
-    getValue: identity,
+    getNodeData: getValues,
   },
   {
     type: 'changed',
     definition: (key, oldData, newData) => oldData[key] !== newData[key],
-    getValue: (oldValue, newValue) => [oldValue, newValue],
+    getNodeData: getValues,
   },
 ];
 
 const buildAst = (oldData, newData) => {
-  const getNodeType = (key) => nodeTypes
-    .find(({ definition }) => definition(key, oldData, newData));
+  const buildNode = (key) => {
+    const { type, getNodeData } = nodeTypes
+      .find(({ definition }) => definition(key, oldData, newData));
+    return { type, key, ...getNodeData(oldData[key], newData[key], buildAst) };
+  };
 
   const keys = union(Object.keys(oldData), Object.keys(newData));
-  return keys.map((key) => {
-    const { type, getValue } = getNodeType(key, oldData, newData);
-    return { type, key, value: getValue(oldData[key], newData[key], buildAst) };
-  });
+  return keys.map(buildNode);
 };
 
 export default buildAst;

@@ -17,20 +17,20 @@ const buildString = (prefix, key, value, depth) => {
 };
 
 const handlers = {
-  deleted: (key, value, depth) => buildString('-', key, value, depth),
-  added: (key, value, depth) => buildString('+', key, value, depth),
-  nested: (key, value, depth, iter) => {
-    const content = iter(value, depth + 1);
+  deleted: ({ key, oldValue }, depth) => buildString('-', key, oldValue, depth),
+  added: ({ key, newValue }, depth) => buildString('+', key, newValue, depth),
+  nested: ({ key, children }, depth, iter) => {
+    const content = iter(children, depth + 1);
     const contentInBrackets = addBrackets(content, depth);
     return buildString(' ', key, contentInBrackets, depth);
   },
-  equal: (key, value, depth) => buildString(' ', key, value, depth),
-  changed: (key, [oldValue, newValue], depth) => (
+  equal: ({ key, oldValue }, depth) => buildString(' ', key, oldValue, depth),
+  changed: ({ key, oldValue, newValue }, depth) => (
     `${buildString('-', key, oldValue, depth)}\n${buildString('+', key, newValue, depth)}`),
 };
 
 const iter = (astTree, depth = 1) => astTree
-  .map(({ type, key, value }) => handlers[type](key, value, depth, iter))
+  .map(({ type, ...nodeData }) => handlers[type](nodeData, depth, iter))
   .join('\n');
 
 export default (astTree) => `{\n${iter(astTree)}\n}`;
