@@ -2,17 +2,18 @@
 import program from 'commander';
 import gendiff from '..';
 import { version, description } from '../../package.json';
-import { formats } from '../formatters';
+import { formatsNames } from '../formatters';
 
 program
   .version(version)
   .description(description)
-  .option('-f, --format [type]', `output formats: ${formats.join(', ')}`, 'treelike')
+  .option('-f, --format [type]', `output formats: ${formatsNames.join(', ')}`, 'treelike')
   .arguments('<firstConfig> <secondConfig>')
   .action((firstConfig, secondConfig) => {
-    const output = formats.includes(program.format)
-      ? gendiff(firstConfig, secondConfig, program.format)
-      : 'Unknown format :(';
-    console.log(output);
+    if (formatsNames.includes(program.format)) {
+      console.log(gendiff(firstConfig, secondConfig, program.format));
+    } else {
+      console.log('Unknown format :(');
+    }
   })
   .parse(process.argv);
