@@ -19,8 +19,8 @@ npm link
 #### treelike
 Default format.
 
-<a href="https://asciinema.org/a/LMkAkfF2ppIj7NJJxQnE6AM8C?autoplay=1"><img src="https://asciinema.org/a/LMkAkfF2ppIj7NJJxQnE6AM8C.svg"></a>
+<a href="https://asciinema.org/a/JqdiqxsKZqzw9u6ShOqzIRPqh?autoplay=1"><img src="https://asciinema.org/a/JqdiqxsKZqzw9u6ShOqzIRPqh.svg"></a>
 #### plain
 <a href="https://asciinema.org/a/xEbzUqAAF1u3DKwMP1dl7XPRU?autoplay=1"><img src="https://asciinema.org/a/xEbzUqAAF1u3DKwMP1dl7XPRU.svg"></a>
 #### json
-<a href="https://asciinema.org/a/seghM7nuGPumXbGiiYI1E03TZ?autoplay=1"><img src="https://asciinema.org/a/seghM7nuGPumXbGiiYI1E03TZ.svg"></a>
+<a href="https://asciinema.org/a/GZwA6gxm9JlZmUB0FqxJ5uo4x?autoplay=1"><img src="https://asciinema.org/a/GZwA6gxm9JlZmUB0FqxJ5uo4x.svg"></a>
