@@ -1,5 +1,6 @@
 const indentStep = 4;
-const getIndent = (depth) => ' '.repeat(depth * indentStep);
+const prefixBlockLength = 2;
+const getIndent = (depth) => ' '.repeat((depth * indentStep) - prefixBlockLength);
 const addBrackets = (content, depth) => `{\n${content}\n${getIndent(depth)}  }`;
 
 const stringify = (value, depth) => {
