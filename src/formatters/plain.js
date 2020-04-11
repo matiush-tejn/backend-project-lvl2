@@ -2,7 +2,7 @@ import { flattenDeep } from 'lodash';
 
 const stringify = (value) => {
   if (value instanceof Object) return '[complex value]';
-  return typeof value === 'string' ? `'${value}'` : value;
+  return typeof value === 'string' ? `'${value}'` : value.toString();
 };
 
 const getKeysLine = (keys) => `Property '${keys.join('.')}' was`;
