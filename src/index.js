@@ -10,9 +10,9 @@ const getParsedData = (filepath) => {
   return parse(data, ext);
 };
 
-export default (filepath1, filepath2, formatName) => {
+export default (filepath1, filepath2, formatType) => {
   const oldData = getParsedData(filepath1);
   const newData = getParsedData(filepath2);
   const astTree = buildAst(oldData, newData);
-  return format(astTree, formatName);
+  return format(astTree, formatType);
 };

@@ -4,6 +4,6 @@ import json from './json';
 
 const formats = { treelike, plain, json };
 
-export const formatsNames = Object.keys(formats);
+export const formatsTypes = Object.keys(formats);
 
-export default (astTree, formatName) => formats[formatName](astTree);
+export default (astTree, formatType) => formats[formatType](astTree);
