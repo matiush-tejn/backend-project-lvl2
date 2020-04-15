@@ -5,13 +5,13 @@ const stringify = (value) => {
   return typeof value === 'string' ? `'${value}'` : value.toString();
 };
 
-const getKeysLine = (keys) => `Property '${keys.join('.')}' was`;
 const handlers = {
-  deleted: (keys) => `${getKeysLine(keys)} deleted`,
-  added: (keys, { newValue }) => `${getKeysLine(keys)} added with value: ${stringify(newValue)}`,
+  deleted: (keys) => `Property '${keys.join('.')}' was deleted`,
+  added: (keys, { newValue }) => (
+    `Property '${keys.join('.')}' was added with value: ${stringify(newValue)}`),
   nested: (keys, { children }, iter) => iter(children, keys),
   changed: (keys, { oldValue, newValue }) => (
-    `${getKeysLine(keys)} changed from ${stringify(oldValue)} to ${stringify(newValue)}`),
+    `Property '${keys.join('.')}' was changed from ${stringify(oldValue)} to ${stringify(newValue)}`),
 };
 
 const iter = (astTree, prevKeys = []) => astTree
